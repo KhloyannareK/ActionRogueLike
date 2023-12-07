@@ -50,6 +50,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		Input->BindAction(RightAction, ETriggerEvent::Triggered, this, &AMyCharacter::MoveRight);
 		Input->BindAction(TurnYAction, ETriggerEvent::Triggered, this, &AMyCharacter::TurnY);
 		Input->BindAction(ProjectileAction, ETriggerEvent::Triggered, this, &AMyCharacter::SpawnProjectile);
+		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMyCharacter::MyJump);
 		if (APlayerController* PC = Cast<APlayerController>(GetController())) {
 			if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 			{
@@ -94,6 +95,12 @@ void AMyCharacter::MoveRight(const FInputActionValue& v)
 	FVector rightVector = FRotationMatrix(rotator).GetScaledAxis(EAxis::Y);
 
 	AddMovementInput(rightVector, v.Get<float>());
+}
+
+void AMyCharacter::MyJump(const FInputActionValue& v)
+{
+	UE_LOG(LogTemp, Log, TEXT("Jump"));
+	ACharacter::Jump();
 }
 
 void AMyCharacter::TurnY(const FInputActionValue& v)

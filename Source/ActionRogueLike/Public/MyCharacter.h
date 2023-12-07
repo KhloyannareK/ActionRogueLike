@@ -51,11 +51,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* ProjectileAction;
 	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* JumpAction;
+	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputMappingContext* MappingContext;
 
 	void MoveForward(const FInputActionValue& v);
 	void Turn(const FInputActionValue& v);
 	void MoveRight(const FInputActionValue& v);
+	void MyJump(const FInputActionValue& v);
 	void TurnY(const FInputActionValue& v);
 	void SpawnProjectile(const FInputActionValue& v);
 
