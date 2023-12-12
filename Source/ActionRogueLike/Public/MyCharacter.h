@@ -12,6 +12,8 @@ class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
 
+class UMyInteractionComponent;
+
 UCLASS()
 class ACTIONROGUELIKE_API AMyCharacter : public ACharacter
 {
@@ -29,9 +31,16 @@ protected:
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
-
-	UPROPERTY(EditAnywhere)
+	
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> ProjectileClass;
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* AttackAnim;
+
+	FTimerHandle TimerHandle;
+
+	UPROPERTY(VisibleAnywhere)
+	UMyInteractionComponent* InteractionComp;
 
 public:	
 	// Called every frame
@@ -53,13 +62,17 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* JumpAction;
 	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* OpenAction;
+	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputMappingContext* MappingContext;
 
 	void MoveForward(const FInputActionValue& v);
 	void Turn(const FInputActionValue& v);
 	void MoveRight(const FInputActionValue& v);
 	void MyJump(const FInputActionValue& v);
+	void OpenChest(const FInputActionValue& v);
 	void TurnY(const FInputActionValue& v);
 	void SpawnProjectile(const FInputActionValue& v);
+	void SpawnProjectileAfterTimer();
 
 };

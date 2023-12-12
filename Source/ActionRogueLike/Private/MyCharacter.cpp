@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "MyInteractionComponent.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -23,6 +24,8 @@ AMyCharacter::AMyCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
+
+	InteractionComp = CreateDefaultSubobject<UMyInteractionComponent>("interactionComp");
 }
 
 // Called when the game starts or when spawned
@@ -51,6 +54,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		Input->BindAction(TurnYAction, ETriggerEvent::Triggered, this, &AMyCharacter::TurnY);
 		Input->BindAction(ProjectileAction, ETriggerEvent::Triggered, this, &AMyCharacter::SpawnProjectile);
 		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMyCharacter::MyJump);
+		Input->BindAction(OpenAction, ETriggerEvent::Triggered, this, &AMyCharacter::OpenChest);
 		if (APlayerController* PC = Cast<APlayerController>(GetController())) {
 			if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 			{
@@ -103,6 +107,14 @@ void AMyCharacter::MyJump(const FInputActionValue& v)
 	ACharacter::Jump();
 }
 
+void AMyCharacter::OpenChest(const FInputActionValue& v)
+{
+	UE_LOG(LogTemp, Log, TEXT("OpenChest action"));
+	if (InteractionComp) {
+	    InteractionComp->PrimaryInteraction();
+	}
+}
+
 void AMyCharacter::TurnY(const FInputActionValue& v)
 {
 	UE_LOG(LogTemp, Log, TEXT("TurnY"));
@@ -113,13 +125,20 @@ void AMyCharacter::SpawnProjectile(const FInputActionValue& v)
 {
 	UE_LOG(LogTemp, Log, TEXT("SpawnProjectile"));
 
+	// play animation
+	PlayAnimMontage(AttackAnim);
+	// and after a period of time spawn the projectile
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AMyCharacter::SpawnProjectileAfterTimer, 0.15f);
+}
+
+void AMyCharacter::SpawnProjectileAfterTimer()
+{
 	FActorSpawnParameters spawnParameters;
 	spawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	FVector handLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
-	FTransform spawnTransform{ GetControlRotation(), handLocation};
+	FTransform spawnTransform{ GetControlRotation(), handLocation };
 
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, spawnTransform, spawnParameters);
 }
-
